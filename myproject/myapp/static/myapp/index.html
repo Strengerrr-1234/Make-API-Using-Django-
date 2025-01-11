@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item List</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f5;
+            color: #333;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: teal;
+        }
+
+        /* Container for items */
+        #items {
+            margin: 20px auto;
+            max-width: 600px;
+            padding: 10px;
+            border: 2px solid teal;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid teal;
+            border-radius: 5px;
+            background-color: #e6f7f8;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .item:hover {
+            transform: scale(1.02);
+            background-color: #d0eff0;
+        }
+
+        /* Form styling */
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 2px solid teal;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        input, textarea, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid teal;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            outline: none;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #008080;
+            box-shadow: 0 0 8px rgba(0, 128, 128, 0.5);
+        }
+
+        button {
+            background-color: teal;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #006666;
+        }
+
+        /* Animations */
+        .item {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Item List</h1>
+    <div id="items"></div>
+    <h2>Add Item</h2>
+    <form id="item-form">
+        <input type="text" id="name" placeholder="Name" required>
+        <textarea id="description" placeholder="Description" required></textarea>
+        <button type="submit">Add Item</button>
+    </form>
+    <script>
+        const apiUrl = 'http://127.0.0.1:8000/api/items/';
+
+        async function fetchItems() {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            const itemsDiv = document.getElementById('items');
+            itemsDiv.innerHTML = '';
+            data.forEach(item => {
+                itemsDiv.innerHTML += `<div class="item"><strong>${item.name}</strong><p>${item.description}</p></div>`;
+            });
+        }
+
+        document.getElementById('item-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const description = document.getElementById('description').value;
+
+            await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, description }),
+            });
+
+            document.getElementById('name').value = '';
+            document.getElementById('description').value = '';
+            fetchItems();
+        });
+
+        fetchItems();
+    </script>
+</body>
+</html>
